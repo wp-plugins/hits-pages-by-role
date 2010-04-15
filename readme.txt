@@ -35,6 +35,7 @@ This section describes how to install the plugin and get it working.
 = 1.0.2 =
 * Updated readme to have correct settings
 * Fixed file extension case of screenshot files
+* [Updated April 15, 2010]
 
 = 1.0.1 =
 * First version
