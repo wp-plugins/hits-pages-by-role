@@ -156,7 +156,7 @@ if (!class_exists('hits_pbr')) {
                 if (!isset($current->response[$file])) return false;
 
                 $columns = $this->wp_version < 28 ? 5 : 3;
-                $url = "http://svn.wp-plugins.org/hits-ie6-pngfix/trunk/updateText.txt";
+                $url = "http://plugins.svn.wordpress.org/hits-pages-by-role/trunk/updateText.txt";
                 $update = wp_remote_fopen($url);
                 if ($update != "") {
                     echo '<td colspan="'.$columns.'" class="hits-plugin-update"><div class="hits-plugin-update-message">';
