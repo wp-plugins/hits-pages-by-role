@@ -459,7 +459,7 @@ if (!class_exists('hits_pbr')) {
                          </div>
                     </div>
                 <div id="Feedback"><?php $this->echoStr('Feedback and requests are always welcome.');?>
-                <a href="http://www.homeitsolutions.ca/websites/wordpress-plugins/"><?php $this->echoStr('Visit the plugin website');?></a>
+                <a href="http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role/"><?php $this->echoStr('Visit the plugin website');?></a>
 				   <?php $this->echoStr('to leave any feedback, translations, comments or donations. All donations will go towards micro loans through');?>
                    <a href="http://www.kiva.org">Kiva</a>.</div>
                 </form>
