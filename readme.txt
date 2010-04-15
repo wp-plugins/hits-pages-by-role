@@ -18,7 +18,7 @@ From a drop down you can select the page, user role and optional override text f
 
 This section describes how to install the plugin and get it working.
 
-1. Upload folder `hits-pbr` to the `/wp-content/plugins/` directory.
+1. Upload folder `hits-pages-by-role` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Define your settings.
 1. Add the widget to your site.
@@ -31,6 +31,10 @@ This section describes how to install the plugin and get it working.
 3. Adding a new page to the list. The Page dropdown has a list of all Pages in your site.
 
 == Changelog ==
+
+= 1.0.2 =
+* Updated readme to have correct settings
+* Fixed file extension case of screenshot files
 
 = 1.0.1 =
 * First version
