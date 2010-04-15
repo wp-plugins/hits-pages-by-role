@@ -32,6 +32,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.0.3 =
+* Fixed location of Update Notes to display when plugin can be upgraded
+* [Updated April 15, 2010]
+
 = 1.0.2 =
 * Updated readme to have correct settings
 * Fixed file extension case of screenshot files
