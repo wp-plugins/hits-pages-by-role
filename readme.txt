@@ -27,7 +27,7 @@ This section describes how to install the plugin and get it working.
 == Screenshots ==
 
 1. The main plugin settings.
-2. A list of existing pages. Deleted items are updated real-time with ajax
+2. A list of existing pages. Deleted items are updated real-time with ajax.
 3. Adding a new page to the list. The Page dropdown has a list of all Pages in your site.
 
 == Changelog ==
