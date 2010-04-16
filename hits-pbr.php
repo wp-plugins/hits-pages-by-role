@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.0.1
+	Version: 1.0.4
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -375,6 +375,7 @@ if (!class_exists('hits_pbr')) {
 			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#">Delete</a></div>';
 			$html.= '<div class="pageInfo">Page: <span class="pageName">'.$pageName.'</span> ';
 			$html.= 'accessible by: <span class="accessibleBy">'.$minAccess.'</span> ';
+			$html.= 'override text: <span class="override">'.$overrideText'</span> ';
 			$html.= '</div>';
 			$html.= '</div>';
 			
