@@ -1,1 +1,1 @@
-<span style="color: red; font-variant: small-caps; font-weight: bold;">Version 1.0.4 Changes: </span>Updated author links, include the override text in the record for each link, readme.txt and screenshots
+<span style="color: red; font-variant: small-caps; font-weight: bold;">Version 1.0.5 Changes: </span>Updated author links, include the override text in the record for each link, readme.txt, screenshots, and a code bug fix
