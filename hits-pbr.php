@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.0.4
+	Version: 1.0.5
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -48,7 +48,7 @@ if (!class_exists('hits_pbr')) {
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.0';        
+		var $version = '1.1.0';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -95,7 +95,7 @@ if (!class_exists('hits_pbr')) {
         /**
         * @var string $localizationDomain Domain used for localization
         */
-        var $localizationDomain = "hits-pbr";
+        var $localizationDomain = "hits-pages-by-role";
  
 		
 		/*
@@ -238,7 +238,7 @@ if (!class_exists('hits_pbr')) {
         */
         function filter_plugin_actions($links, $file) 
 		{
-           $settings_link = '<a href="options-general.php?page=' . basename(__FILE__) . '">' . __('Settings') . '</a>';
+           $settings_link = '<a href="options-general.php?page=' . basename(__FILE__) . '">' . $this->getStr('Settings') . '</a>';
            array_unshift( $links, $settings_link ); // before other links
 
            return $links;
@@ -375,7 +375,7 @@ if (!class_exists('hits_pbr')) {
 			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#">Delete</a></div>';
 			$html.= '<div class="pageInfo">Page: <span class="pageName">'.$pageName.'</span> ';
 			$html.= 'accessible by: <span class="accessibleBy">'.$minAccess.'</span> ';
-			$html.= 'override text: <span class="override">'.$overrideText'</span> ';
+			$html.= 'override text: <span class="override">'.$overrideText.'</span> ';
 			$html.= '</div>';
 			$html.= '</div>';
 			
