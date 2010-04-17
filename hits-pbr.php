@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.0.5
+	Version: 1.1.1
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -26,7 +26,6 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
-
 /**
 * Guess the wp-content and plugin urls/paths
 */
@@ -39,6 +38,8 @@ if ( ! defined( 'WP_PLUGIN_URL' ) )
       define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
 if ( ! defined( 'WP_PLUGIN_DIR' ) )
       define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
+	  
+require_once WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)).'/hits-db.php';
 
 if (!class_exists('hits_pbr')) {
     class hits_pbr {
@@ -48,7 +49,7 @@ if (!class_exists('hits_pbr')) {
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.1.0';        
+		var $version = '1.1.1';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -63,17 +64,19 @@ if (!class_exists('hits_pbr')) {
         * @var array $options Stores the options for this plugin
         */
         var $options = array();
+		
+		var $hits_pbr_db;
         
         //Class Functions
         /**
         * PHP 4 Compatible Constructor
         */
-        function hits_pbr(){$this->__construct();}
+        function hits_pbr($pbr_db){$this->__construct($pbr_db);}
         
         /**
         * PHP 5 Constructor
         */        
-        function __construct(){
+        function __construct($pbr_db){
             //Language Setup
             $locale = get_locale();
             $mo = dirname(__FILE__) . "/languages/" . strtolower($this->localizationDomain) . "-".strtolower($locale).".mo";
@@ -82,6 +85,7 @@ if (!class_exists('hits_pbr')) {
             //"Constants" setup
             $this->thispluginurl = WP_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)).'/';
             $this->thispluginpath = WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)).'/';
+			$this->hits_pbr_db = $pbr_db;
 			
 			global $wp_version;
             $this->wp_version = substr(str_replace('.', '', $wp_version), 0, 2);
@@ -89,7 +93,7 @@ if (!class_exists('hits_pbr')) {
             //Initialize the options
             //This is REQUIRED to initialize the options when the plugin is loaded!
             $this->getOptions();
-            $this->actions_filters();
+            $this->actions_filters_hooks();
         }
         
         /**
@@ -101,7 +105,7 @@ if (!class_exists('hits_pbr')) {
 		/*
 		 * Centralized place for adding all actions and filters for the plugin into wordpress
 		*/
-		function actions_filters()
+		function actions_filters_hooks()
 		{
 			add_action("admin_menu", array(&$this,"admin_menu_link"));
 			add_action('admin_head', array(&$this, 'admin_head'));
@@ -112,19 +116,26 @@ if (!class_exists('hits_pbr')) {
 			//ajax handlers
 			add_action('wp_ajax_hits_pbr_add_record',array(&$this, 'add_record'));
 			add_action('wp_ajax_hits_pbr_remove_record',array(&$this, 'remove_record'));
+			add_action('wp_ajax_hits_pbr_moveUp_record',array(&$this, 'moveUp_record'));
+			add_action('wp_ajax_hits_pbr_moveDown_record',array(&$this, 'moveDown_record'));
+			
+			//housekeeping
+			register_activation_hook(__FILE__,'install');
+			
+		}
+		
+		function install()
+		{
+			$this->hits_pbr_db->install();	
 		}
 		
 		function add_record()
 		{
-			$this->getOptions();
 			$page_ID = $_POST['page_id'];
 			$page_MinAccess = $_POST['minAccess'];
 			$page_OverrideText = $_POST['overrideText'];
 			
-			$this->options['pages']["$page_ID"]= array('access'=>$page_MinAccess,
-													 'linkOverride'=>$page_OverrideText,
-													 'pageID'=>$page_ID);
-			$this->saveAdminOptions();
+			$this->hits_pbr_db->add_page($page_ID,$page_MinAccess,$page_OverrideText);
 			
 			echo $this->getHtmlForRecord($page_ID,$page_MinAccess,$page_OverrideText);
 			die();
@@ -132,12 +143,26 @@ if (!class_exists('hits_pbr')) {
 		
 		function remove_record()
 		{
-			$this->getOptions();
 			$page_ID=$_POST['page_id'];
-			unset($this->options['pages'][$page_ID]);
-			$this->saveAdminOptions();
+			$this->hits_pbr_db->remove_page($page_ID);
 			echo "$page_ID";
 			die();
+		}
+		
+		function moveUp_record()
+		{
+			$page_ID=$_POST['page_id'];
+			$target_page_id = $this->hits_pbr_db->movePageUp($page_ID);
+			echo "$page_ID,$target_page_id";
+			die();			
+		}
+		
+		function moveDown_record()
+		{
+			$page_ID=$_POST['page_id'];
+			$target_page_id = $this->hits_pbr_db->movePageDown($page_ID);
+			echo "$page_ID,$target_page_id";
+			die();			
 		}
 		
 		function admin_head()
@@ -187,15 +212,9 @@ if (!class_exists('hits_pbr')) {
 		{
             if (!$theOptions = get_option($this->optionsName)) 
 			{
-				$defaultPageInfo = array("access"=>"Administrator",
-									   "linkOverride"=>"",
-									   "pageID"=>"-1"
-									   );
-				$defaultPageList = array("-1"=>$defaultPageInfo);
                 $theOptions = array('hits_plugin_debug'=>"false",
 									'hits_pbr_title'=>"Pages",
-									'hits_pbr_version'=>$this->version,
-									'pages'=>$defaultPageList
+									'hits_pbr_version'=>$this->version
 									);
                 update_option($this->optionsName, $theOptions);
             }
@@ -207,14 +226,74 @@ if (!class_exists('hits_pbr')) {
 			{
 				echo "\n<!--  Missing Options -->\n";
 				$missingOptions=true;
-				$this->options['hits_pbr_version']=$this->version;
+				$oldVersion = $this->options['hits_pbr_version'];
 				//an upgrade, run upgrade specific tasks.
+				if(substr($oldVersion,0,3)=='1.0' || substr($oldVersion,0,5)=='1.1.0')
+				{
+					//need to create database
+					$this->hits_pbr_db->install();
+					
+					//need to add sort order to existing pages	
+					if(count($this->options['pages'])>0)
+					{
+						$pages = $this->options['pages'];
+				
+						foreach($pages as $page)
+						{
+							$pageId = $page['pageID'];
+							$pageAccess = $this->translatePageAccessNameToId($page['access']);
+							$overrideText = $page['linkOverride'];
+							echo "<!--Adding page  $pageId,$pageAccess,$overrideText-->";
+							$this->hits_pbr_db->add_page($pageId,$pageAccess,$overrideText);
+						}
+						unset($this->options['pages']);
+					}
+				}
+				
+				//done the upgrade
+				$this->options['hits_pbr_version']=$this->version;
 			}
 			
 			//if missing options found, update them.
 			if($missingOptions==true)
 				$this->saveAdminOptions();
         }
+		
+		function translatePageAccessNameToId($pageAccess)
+		{
+			if($pageAccess=='Administrator')
+				return 5;
+			else if($pageAccess=='Editor')
+				return 4;							
+			else if($pageAccess=='Author')
+				return 3;							
+			else if($pageAccess=='Contributor')
+				return 2;							
+			else if($pageAccess=='Subscriber')
+				return 1;						
+			else if($pageAccess=='Public')
+				return 0;							
+			else if($pageAccess=='PublicOnly')
+				return -1;	
+		}
+		
+		function translatePageAccessIdToName($pageAccess)
+		{
+			if($pageAccess==5)
+				return 'Administrator';
+			if($pageAccess==4)
+				return 'Editor';
+			if($pageAccess==3)
+			   	return 'Author';
+			if($pageAccess==2)
+			   	return 'Contributor';
+			if($pageAccess==1)
+				return 'Subscriber';
+			if($pageAccess==0)
+				return 'Public';
+			if($pageAccess==-1)
+				return 'PublicOnly';
+		}
 		
         /**
         * @desc Saves the admin options to the database.
@@ -266,10 +345,11 @@ if (!class_exists('hits_pbr')) {
 					if ( !empty( $user->roles ) && is_array( $user->roles ) ) 
 					{
 						$role=array_shift($user->roles);
+						$role=$this->translatePageAccessNameToId($role);
 					}					
 				}
 				else
-					$role='public';
+					$role=0;
 				
 				echo "<!-- $role -->";
 					
@@ -316,31 +396,10 @@ if (!class_exists('hits_pbr')) {
 		
 		function has_access_level_to_display_link($needed, $has)
 		{
-			if($needed=='Administrator')
-				if($has=='administrator')
-					return true;
+			if($needed>=$has && $needed>=0)
+				return true;
 			
-			if($needed=='Editor')
-				if($has=='administrator' || $has=='editor')
-					return true;
-			
-			if($needed=='Author')
-				if($has=='administrator' || $has=='editor' || $has=='author')
-					return true;
-			
-			if($needed=='Contributor')
-				if($has!='public' && $has!='subscriber')
-					return true;
-			
-			if($needed=='Subscriber')
-				if($has!='public')
-					return true;
-			
-			if($needed=='PublicOnly')
-				if($has=='public')
-					return true;
-			
-			if($needed=='Public')
+			if($needed==-1 && $has==-1)
 				return true;
 			
 			return false;
@@ -372,9 +431,11 @@ if (!class_exists('hits_pbr')) {
 				$pageName=$page->post_title;
 			}
 			$html = '<div id="record-'.$pageId.'" class="pbrRecord">';
+			$html.= '<div class="moveUpLink"><a class="pbrMoveUp" href="#">Move Up</a></div>';
+			$html.= '<div class="moveDownLink"><a class="pbrMoveDown" href="#">Move Down</a></div>';
 			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#">Delete</a></div>';
 			$html.= '<div class="pageInfo">Page: <span class="pageName">'.$pageName.'</span> ';
-			$html.= 'accessible by: <span class="accessibleBy">'.$minAccess.'</span> ';
+			$html.= 'accessible by: <span class="accessibleBy">'.$this->translatePageAccessIdToName($minAccess).'</span> ';
 			$html.= 'override text: <span class="override">'.$overrideText.'</span> ';
 			$html.= '</div>';
 			$html.= '</div>';
@@ -415,13 +476,15 @@ if (!class_exists('hits_pbr')) {
                     <div class="saveButton"><input type="submit" name="hits_pbr_save" value="Save" /></div>
                 </div>
 					<?php
-					if(count($this->options['pages'])>0)
+					echo '<!-- about to get pages -->';
+					$pages = $this->hits_pbr_db->get_pages();
+					if(count($pages)>0)
 					{
 						echo '<div id="pageList"><h3>'. $this->getStr('Existing Pages').'</h3>';
-						$pages = $this->options['pages'];
+						
 						foreach($pages as $page)
 						{
-							echo $this->getHtmlForRecord($page['pageID'],$page['access'],$page['linkOverride']);
+							echo $this->getHtmlForRecord($page->PageId,$page->AccessRole,$page->OverrideText);
 						}
 						echo '</div>';
 					}					
@@ -446,13 +509,13 @@ if (!class_exists('hits_pbr')) {
                                         </select></div>
                              <div class="itemTitle"><?php $this->echoStr('Min Access:'); ?></div>
                              <div class="itemField"><select id="hits_pbr_page_MinAccess">
-                                        	<option value="Administrator"><?php $this->echoStr('Administrator'); ?></option>
-                                        	<option value="Editor"><?php $this->echoStr('Editor'); ?></option>
-                                        	<option value="Author"><?php $this->echoStr('Author'); ?></option>
-                                        	<option value="Contributor"><?php $this->echoStr('Contributor'); ?></option>
-                                        	<option value="Subscriber"><?php $this->echoStr('Subscriber'); ?></option>                                            
-                                        	<option value="Public"><?php $this->echoStr('Public'); ?></option>
-                                            <option value="PublicOnly"><?php $this->echoStr('PublicOnly'); ?></option>
+                                        	<option value="5"><?php $this->echoStr('Administrator'); ?></option>
+                                        	<option value="4"><?php $this->echoStr('Editor'); ?></option>
+                                        	<option value="3"><?php $this->echoStr('Author'); ?></option>
+                                        	<option value="2"><?php $this->echoStr('Contributor'); ?></option>
+                                        	<option value="1"><?php $this->echoStr('Subscriber'); ?></option>                                            
+                                        	<option value="0"><?php $this->echoStr('Public'); ?></option>
+                                            <option value="-1"><?php $this->echoStr('PublicOnly'); ?></option>
                                         </select></div>
                              <div class="itemTitle"><?php $this->echoStr('Override Text:'); ?></div>
                              <div class="itemField"><input type="text" id="hits_pbr_page_OverrideText" value="<?php echo $this->options['hits_pbr_page1-OverrideText'];  ?>"/></div>
@@ -470,7 +533,22 @@ if (!class_exists('hits_pbr')) {
 } //End if class exists statement
 
 //instantiate the class
-if (class_exists('hits_pbr')) {
-    $hits_pbr_var = new hits_pbr();
+	
+if(class_exists('hits_pbr_db'))
+{
+	$hits_pbr_db = new hits_pbr_db();
+}
+if (class_exists('hits_pbr')) 
+{
+	global $hits_pbr_var;
+    $hits_pbr_var = new hits_pbr($hits_pbr_db);
+}
+
+function install()
+{
+	global $hits_pbr_var;
+	$hits_pbr_var->install();
+	echo"<!-- installing plugin -->";
+	$hits_pbr_var->populateDefaults();
 }
 ?>

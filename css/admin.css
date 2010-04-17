@@ -21,8 +21,9 @@
 	clear:left;
 }
 
-#hits_pbr_options .deleteLink{
+#hits_pbr_options .moveUpLink,#hits_pbr_options .moveDownLink,#hits_pbr_options .deleteLink{
 	margin-right:16px;
+	clear:none;
 }
 
 #hits_pbr_options .itemTitle{
@@ -32,17 +33,21 @@
 }
 
 #hits_pbr_options .itemField{
-	width:500px;
+	width:700px;
 	clear:none;
 }
 
 #hits_pbr_options .pbrRecord{
-	width:660px;
+	width:860px;
 	height:24px;
 }
 
 #hits_pbr_options .pbrRecord .pageInfo{
 	clear:none;
+}
+
+#hits_pbr_options .pbrRecord .pageInfo span{
+	font-weight:bold;
 }
 
 #hits_pbr_options #newRecordRow{

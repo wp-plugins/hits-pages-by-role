@@ -2,6 +2,8 @@
 jQuery(function(){
 		   jQuery("#hits_pbr_add_item_button").click(add);
 		   jQuery("a.pbrDelete").click(remove);
+		   jQuery("a.pbrMoveUp").click(moveUp);
+		   jQuery("a.pbrMoveDown").click(moveDown);
 });
 
 function add()
@@ -24,6 +26,12 @@ function add()
 	return false;
 }
 
+function successfulAdd(html)
+{
+	jQuery(html).insertBefore("#newRecordRow");
+	jQuery("#newRecordRow:last-child a.pbrDelete").click(remove);
+}
+
 function remove(e)
 {
 	e.preventDefault();
@@ -37,14 +45,59 @@ function remove(e)
 	jQuery.post(ajaxurl,data,successfulRemove);
 }
 
-function successfulAdd(html)
-{
-	jQuery(html).insertBefore("#newRecordRow");
-}
-
 function successfulRemove(html)
 {
 	var recordId = '#record-'+html;
 	var record=jQuery(recordId);
 	record.slideUp(300,function(){record.remove();});
+}
+
+function moveUp(e)
+{
+	e.preventDefault();
+	var parent=jQuery(this).parent().parent();
+	hits_pbr_page_ID= parent.attr('id').replace('record-','');
+	
+	var data = {
+		action: 'hits_pbr_moveUp_record',
+		page_id: hits_pbr_page_ID
+	}
+	jQuery.post(ajaxurl,data,successfulMoveUp);
+	
+}
+
+function successfulMoveUp(html)
+{
+	var pages=html.split(",");
+	if(pages.length==2)
+	{
+		var recordId = '#record-'+ pages[0];
+		var targetRecord = '#record-'+ pages[1];
+		jQuery(recordId).insertBefore(targetRecord);
+	}
+}
+
+function moveDown(e)
+{
+	e.preventDefault();
+	var parent=jQuery(this).parent().parent();
+	hits_pbr_page_ID= parent.attr('id').replace('record-','');
+	
+	var data = {
+		action: 'hits_pbr_moveDown_record',
+		page_id: hits_pbr_page_ID
+	}
+	jQuery.post(ajaxurl,data,successfulMoveDown);
+	
+}
+
+function successfulMoveDown(html)
+{
+	var pages=html.split(",");
+	if(pages.length==2)
+	{
+		var recordId = '#record-'+ pages[0];
+		var targetRecord = '#record-'+ pages[1];
+		jQuery(recordId).insertAfter(targetRecord);
+	}
 }
