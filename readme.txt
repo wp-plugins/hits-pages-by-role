@@ -18,7 +18,6 @@ From a drop down you can select the page, user role and optional override text f
 * Icons instead of links for page manipulation
 * Nicer looking interface
 * Editing existing links
-* 
 
 == Installation ==
 
@@ -41,6 +40,7 @@ This section describes how to install the plugin and get it working.
 = 1.1.1 =
 * Added links to move an existing up/down in order
 * Changed storage of links to be more robust with a dedicated DB table
+* [Updated April 20, 2010]
 
 = 1.0.5 =
 * Updated a stupid miss resulting in a syntax error
