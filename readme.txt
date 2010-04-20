@@ -37,6 +37,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.1.2 =
+* Fixed sorting code to not have a table name hard coded
+* [Updated April 20, 2010]
+
 = 1.1.1 =
 * Added links to move an existing up/down in order
 * Changed storage of links to be more robust with a dedicated DB table

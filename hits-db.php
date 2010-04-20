@@ -96,7 +96,7 @@ if (!class_exists('hits_pbr_db'))
 			$select = "SELECT PageId,SortOrder 
 						FROM " . $this->tableName . "
 					    WHERE SortOrder <= (SELECT SortOrder 
-											FROM wpdb_hits_pbr_pages 
+											FROM " . $this->tableName . " 
 											WHERE PageId=$page_ID)
 					  ORDER BY SortOrder DESC
 					  LIMIT 2;";
@@ -126,7 +126,7 @@ if (!class_exists('hits_pbr_db'))
 			$select = "SELECT PageId,SortOrder 
 						FROM " . $this->tableName . "
 					    WHERE SortOrder >= (SELECT SortOrder 
-											FROM wpdb_hits_pbr_pages 
+											FROM " . $this->tableName . "
 											WHERE PageId=$page_ID)
 					  ORDER BY SortOrder ASC
 					  LIMIT 2;";

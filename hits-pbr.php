@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.1.1
+	Version: 1.1.2
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
