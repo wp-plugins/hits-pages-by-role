@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.1.3
+	Version: 1.1.4
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -49,7 +49,7 @@ if (!class_exists('hits_pbr')) {
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.1.3';        
+		var $version = '1.1.4';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -126,7 +126,7 @@ if (!class_exists('hits_pbr')) {
 		
 		function install()
 		{
-			$this->hits_pbr_db->install();	
+			$this->get_options();	
 		}
 		
 		function add_record()
@@ -332,11 +332,13 @@ if (!class_exists('hits_pbr')) {
 		
 		function widget($args) 
 		{
-			if(count($this->options['pages'])>0)
+			
+			$pages = $this->hits_pbr_db->get_pages();
+	
+			if(count($pages)>0)
 			{
 				$title = $this->options['hits_pbr_title'];
 				echo '<li id="hits_pbr" class="widget widget_pages"><h2 class="widgettitle">'.$title.'</h2><ul>';
-				$pages = $this->options['pages'];
 				$is_loggedIn=is_user_logged_in();
 				$role='';
 				if($is_loggedIn)
@@ -350,15 +352,12 @@ if (!class_exists('hits_pbr')) {
 				}
 				else
 					$role=0;
-				
-				echo "<!-- $role -->";
 					
 				foreach($pages as $page)
 				{
-					$pageId = $page['pageID'];
-					$pageAccess = $page['access'];
-					$overrideText = $page['linkOverride'];
-					echo "<!-- required access: $pageAccess -->";
+					$pageId = $page->PageId;
+					$pageAccess = $page->AccessRole;
+					$overrideText = $page->OverrideText;
 					
 					if($pageId==-1)
 					{
@@ -547,8 +546,8 @@ if (class_exists('hits_pbr'))
 function install()
 {
 	global $hits_pbr_var;
-	$hits_pbr_var->install();
-	echo"<!-- installing plugin -->";
-	$hits_pbr_var->populateDefaults();
+	//$hits_pbr_var->install();
+	//echo"<!-- installing plugin -->";
+	//$hits_pbr_var->populateDefaults();
 }
 ?>
