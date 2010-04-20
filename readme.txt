@@ -37,6 +37,10 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 1.1.3 =
+* Newly added records now have the hyperlinks working.
+* [Updated April 20, 2010]
+
 = 1.1.2 =
 * Fixed sorting code to not have a table name hard coded
 * [Updated April 20, 2010]

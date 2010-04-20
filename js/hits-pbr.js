@@ -29,7 +29,9 @@ function add()
 function successfulAdd(html)
 {
 	jQuery(html).insertBefore("#newRecordRow");
-	jQuery("#newRecordRow:last-child a.pbrDelete").click(remove);
+	jQuery("#pageList:last-child a.pbrDelete").click(remove);
+	jQuery("#pageList:last-child a.pbrMoveUp").click(moveUp);
+	jQuery("#pageList:last-child a.pbrMoveDown").click(moveDown);
 }
 
 function remove(e)
