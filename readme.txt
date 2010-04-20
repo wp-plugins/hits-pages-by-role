@@ -4,7 +4,7 @@ Donate Link:  http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-
 Tags: roles, pages, widget, plugin, admin, author, contributor, custom, links, editor, sidebar
 Requires at least: 2.7
 Tested up to: 2.9
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 
 Pages By Role gives designers the ability to add pages to a widget while specifying what WordPress roles are required to view the link.
 
@@ -37,7 +37,7 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
-= 1.1.4 =
+= 1.1.6 =
 * Fixed problem when activating the plugin for the first time
 * Fixed widget not displaying links
 * [Updated April 20, 2010]
