@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.1.6
+	Version: 1.1.7
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -49,7 +49,7 @@ if (!class_exists('hits_pbr')) {
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.1.6';        
+		var $version = '1.1.7';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -261,19 +261,20 @@ if (!class_exists('hits_pbr')) {
 		
 		function translatePageAccessNameToId($pageAccess)
 		{
-			if($pageAccess=='Administrator')
+			$compare = strtolower($pageAccess);
+			if($compare=='administrator')
 				return 5;
-			else if($pageAccess=='Editor')
+			else if($compare=='editor')
 				return 4;							
-			else if($pageAccess=='Author')
+			else if($compare=='author')
 				return 3;							
-			else if($pageAccess=='Contributor')
+			else if($compare=='contributor')
 				return 2;							
-			else if($pageAccess=='Subscriber')
+			else if($compare=='subscriber')
 				return 1;						
-			else if($pageAccess=='Public')
+			else if($compare=='public')
 				return 0;							
-			else if($pageAccess=='PublicOnly')
+			else if($compare=='publiconly')
 				return -1;	
 		}
 		
@@ -332,7 +333,7 @@ if (!class_exists('hits_pbr')) {
 		
 		function widget($args) 
 		{
-			
+			echo "\n\n<!-- HITS- Pages By Role Widget - Start -->";
 			$pages = $this->hits_pbr_db->get_pages();
 	
 			if(count($pages)>0)
@@ -340,18 +341,23 @@ if (!class_exists('hits_pbr')) {
 				$title = $this->options['hits_pbr_title'];
 				echo '<li id="hits_pbr" class="widget widget_pages"><h2 class="widgettitle">'.$title.'</h2><ul>';
 				$is_loggedIn=is_user_logged_in();
-				$role='';
+				$role=0;
 				if($is_loggedIn)
 				{
 					$user = wp_get_current_user();
 					if ( !empty( $user->roles ) && is_array( $user->roles ) ) 
 					{
 						$role=array_shift($user->roles);
+						if($this->options['hits_plugin_debug']=='true')
+							echo "\n<!-- WP Role=$role -->";
 						$role=$this->translatePageAccessNameToId($role);
+						if($this->options['hits_plugin_debug']=='true')
+							echo "\n<!-- Translated=$role -->";
 					}					
 				}
-				else
-					$role=0;
+					
+				if($this->options['hits_plugin_debug']=='true')
+					echo "\n<!-- Detected Role: $role -->";
 					
 				foreach($pages as $page)
 				{
@@ -390,17 +396,30 @@ if (!class_exists('hits_pbr')) {
 						echo "\n".$output;
 				}
 				echo '</ul></li>';
+				echo "\n<!-- HITS- Pages By Role Widget - End -->";
 			}
 		}
 		
 		function has_access_level_to_display_link($needed, $has)
 		{
-			if($needed>=$has && $needed>=0)
+			if($this->options['hits_plugin_debug']=='true')
+				echo "\n<!-- User requires $needed, and has $has -->";
+			if($needed<=$has && $needed>=0)
+			{
+				if($this->options['hits_plugin_debug']=='true')
+					echo "\n<!-- User has required access -->";
 				return true;
+			}
 			
 			if($needed==-1 && $has==-1)
+			{
+				if($this->options['hits_plugin_debug']=='true')
+					echo "\n<!-- Public Only, has required access -->";
 				return true;
+			}
 			
+			if($this->options['hits_plugin_debug']=='true')
+				echo "\n<!-- Does not have required access -->";
 			return false;
 				
 		}
