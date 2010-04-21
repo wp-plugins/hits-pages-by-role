@@ -15,7 +15,6 @@ Pages By Role gives designers the ability to add pages to a widget while specify
 From a drop down you can select the page, user role and optional override text for each link you want to have displayed.
 
 = Future Functionality =
-* Icons instead of links for page manipulation
 * Nicer looking interface
 * Editing existing links
 
@@ -36,6 +35,11 @@ This section describes how to install the plugin and get it working.
 3. Adding a new page to the list. The Page dropdown has a list of all Pages in your site.
 
 == Changelog ==
+
+= 1.2.1 =
+* Added Icons instead of links for Existing Page Manipulation
+* Added some logging when in debug mode
+* Removed unnecessary installation code
 
 = 1.1.7 =
 * Fixed problem where user access wasn't correctly being calculated (case sensitivity logic error)

@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.1.7
+	Version: 1.2.1
 	Author: Adam Erstelle
 	Author URI: http://www.homeitsolutions.ca
 	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
@@ -38,6 +38,8 @@ if ( ! defined( 'WP_PLUGIN_URL' ) )
       define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
 if ( ! defined( 'WP_PLUGIN_DIR' ) )
       define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
+if ( ! defined( 'WP_ADMIN_IMAGE_URL' ) )
+	  define( 'WP_ADMIN_IMAGE_URL',get_option( 'siteurl' ) . '/wp-admin/images/');
 	  
 require_once WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)).'/hits-db.php';
 
@@ -49,7 +51,7 @@ if (!class_exists('hits_pbr')) {
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.1.7';        
+		var $version = '1.2.1';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -117,11 +119,7 @@ if (!class_exists('hits_pbr')) {
 			add_action('wp_ajax_hits_pbr_add_record',array(&$this, 'add_record'));
 			add_action('wp_ajax_hits_pbr_remove_record',array(&$this, 'remove_record'));
 			add_action('wp_ajax_hits_pbr_moveUp_record',array(&$this, 'moveUp_record'));
-			add_action('wp_ajax_hits_pbr_moveDown_record',array(&$this, 'moveDown_record'));
-			
-			//housekeeping
-			register_activation_hook(__FILE__,'install');
-			
+			add_action('wp_ajax_hits_pbr_moveDown_record',array(&$this, 'moveDown_record'));			
 		}
 		
 		function install()
@@ -448,13 +446,18 @@ if (!class_exists('hits_pbr')) {
 				$page = get_page($pageId);
 				$pageName=$page->post_title;
 			}
+			if(strlen($overrideText)>0)
+				$pageName="(".$overrideText.") " . $pageName;
+				
 			$html = '<div id="record-'.$pageId.'" class="pbrRecord">';
-			$html.= '<div class="moveUpLink"><a class="pbrMoveUp" href="#">Move Up</a></div>';
-			$html.= '<div class="moveDownLink"><a class="pbrMoveDown" href="#">Move Down</a></div>';
-			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#">Delete</a></div>';
-			$html.= '<div class="pageInfo">Page: <span class="pageName">'.$pageName.'</span> ';
+			$moveUpImageURL = WP_ADMIN_IMAGE_URL . 'screen-options-right-up.gif';
+			$html.= '<div class="moveUpLink"><a class="pbrMoveUp" href="#"><img src="'.$moveUpImageURL.'" /></a></div>';
+			$moveDownImageURL = WP_ADMIN_IMAGE_URL . 'screen-options-right.gif';
+			$html.= '<div class="moveDownLink"><a class="pbrMoveDown" href="#"><img src="'.$moveDownImageURL.'" /></a></div>';
+			$deleteImageURL = WP_ADMIN_IMAGE_URL . 'no.png';
+			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#"><img src="'.$deleteImageURL.'" /></a></div>';
+			$html.= '<div class="pageInfo"><span class="pageName">'.$pageName.'</span> ';
 			$html.= 'accessible by: <span class="accessibleBy">'.$this->translatePageAccessIdToName($minAccess).'</span> ';
-			$html.= 'override text: <span class="override">'.$overrideText.'</span> ';
 			$html.= '</div>';
 			$html.= '</div>';
 			
@@ -560,13 +563,5 @@ if (class_exists('hits_pbr'))
 {
 	global $hits_pbr_var;
     $hits_pbr_var = new hits_pbr($hits_pbr_db);
-}
-
-function install()
-{
-	global $hits_pbr_var;
-	//$hits_pbr_var->install();
-	//echo"<!-- installing plugin -->";
-	//$hits_pbr_var->populateDefaults();
 }
 ?>
