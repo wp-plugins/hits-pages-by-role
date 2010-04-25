@@ -38,8 +38,6 @@ if ( ! defined( 'WP_PLUGIN_URL' ) )
       define( 'WP_PLUGIN_URL', WP_CONTENT_URL. '/plugins' );
 if ( ! defined( 'WP_PLUGIN_DIR' ) )
       define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
-if ( ! defined( 'WP_ADMIN_IMAGE_URL' ) )
-	  define( 'WP_ADMIN_IMAGE_URL',get_option( 'siteurl' ) . '/wp-admin/images/');
 	  
 require_once WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)).'/hits-db.php';
 
@@ -120,11 +118,6 @@ if (!class_exists('hits_pbr')) {
 			add_action('wp_ajax_hits_pbr_remove_record',array(&$this, 'remove_record'));
 			add_action('wp_ajax_hits_pbr_moveUp_record',array(&$this, 'moveUp_record'));
 			add_action('wp_ajax_hits_pbr_moveDown_record',array(&$this, 'moveDown_record'));			
-		}
-		
-		function install()
-		{
-			$this->get_options();	
 		}
 		
 		function add_record()
@@ -208,27 +201,36 @@ if (!class_exists('hits_pbr')) {
         */
         function getOptions() 
 		{
+			$missingOptions=false;
+			$oldVersion='Unchecked';
             if (!$theOptions = get_option($this->optionsName)) 
 			{
+				$missingOptions=true;
                 $theOptions = array('hits_plugin_debug'=>"false",
 									'hits_pbr_title'=>"Pages",
 									'hits_pbr_version'=>$this->version
 									);
                 update_option($this->optionsName, $theOptions);
+				$oldVersion='Missing';
+				$this->options = $theOptions;
             }
-            $this->options = $theOptions;
+			else
+			{
+				$this->options = $theOptions;
+				$oldVersion = $this->options['hits_pbr_version'];
+			}
+            
             
 			//check for missing fields on an upgrade
-			$missingOptions=false;
-			if(!$this->options['hits_pbr_version'] || (strcmp($this->options['hits_pbr_version'],$this->version)!=0))
+			if($missingOptions==true || strcmp($oldVersion,$this->version)!=0)
 			{
-				echo "\n<!--  Missing Options -->\n";
+				echo "\n<!--  Missing Options, $oldVersion, $this->version -->\n";
 				$missingOptions=true;
-				$oldVersion = $this->options['hits_pbr_version'];
 				//an upgrade, run upgrade specific tasks.
-				if(substr($oldVersion,0,3)=='1.0' || substr($oldVersion,0,5)=='1.1.0')
+				if(substr($oldVersion,0,3)=='1.0' || substr($oldVersion,0,5)=='1.1.0' || $oldVersion=='Missing')
 				{
 					//need to create database
+					echo "\n<!-- Creating Database -->";
 					$this->hits_pbr_db->install();
 					
 					//need to add sort order to existing pages	
@@ -246,6 +248,14 @@ if (!class_exists('hits_pbr')) {
 						}
 						unset($this->options['pages']);
 					}
+					else
+					{
+						$this->hits_pbr_db->populateDefaults();	
+					}
+				}
+				if($oldVersion=='1.1.7')
+				{
+					$this->hits_pbr_db->verifyDbState();
 				}
 				
 				//done the upgrade
@@ -450,11 +460,11 @@ if (!class_exists('hits_pbr')) {
 				$pageName="(".$overrideText.") " . $pageName;
 				
 			$html = '<div id="record-'.$pageId.'" class="pbrRecord">';
-			$moveUpImageURL = WP_ADMIN_IMAGE_URL . 'screen-options-right-up.gif';
+			$moveUpImageURL = $this->thispluginurl . 'images/Up.gif';
 			$html.= '<div class="moveUpLink"><a class="pbrMoveUp" href="#"><img src="'.$moveUpImageURL.'" /></a></div>';
-			$moveDownImageURL = WP_ADMIN_IMAGE_URL . 'screen-options-right.gif';
+			$moveDownImageURL = $this->thispluginurl . 'images/Down.gif';
 			$html.= '<div class="moveDownLink"><a class="pbrMoveDown" href="#"><img src="'.$moveDownImageURL.'" /></a></div>';
-			$deleteImageURL = WP_ADMIN_IMAGE_URL . 'no.png';
+			$deleteImageURL = $this->thispluginurl . 'images/Remove.gif';
 			$html.= '<div class="deleteLink"><a class="pbrDelete" href="#"><img src="'.$deleteImageURL.'" /></a></div>';
 			$html.= '<div class="pageInfo"><span class="pageName">'.$pageName.'</span> ';
 			$html.= 'accessible by: <span class="accessibleBy">'.$this->translatePageAccessIdToName($minAccess).'</span> ';

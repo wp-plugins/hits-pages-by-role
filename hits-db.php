@@ -36,6 +36,25 @@ if (!class_exists('hits_pbr_db'))
 			add_option("hits_pbr_db_version",$this->hits_pbr_db_version);
 		}
 		
+		function verifyDbState()
+		{
+			global $wpdb;
+			echo "<!-- Verifying Database State -->";
+			$value = get_option("hits_pbr_db_version");
+			$tableCheck = "SHOW TABLES LIKE '$this->tableName';";
+			echo "<!-- $tableCheck -->";
+			if($wpdb->get_var($tableCheck) == $this->tableName)
+			{
+				echo "<!-- Table Exists -->";
+			}
+			else
+			{
+				echo "<!--DB missing -->";
+				$this->install();
+				$this->populateDefaults();
+			}
+		}
+		
 		function populateDefaults()
 		{
 			global $wpdb;
@@ -69,7 +88,6 @@ if (!class_exists('hits_pbr_db'))
 			$insert = "INSERT INTO " . $this->tableName . " (PageId,AccessRole,OverrideText,SortOrder) " .
 				"VALUES ($page_ID,$page_MinAccess,'$page_OverrideText',$sortOrder);";
 			$wpdb->query($insert);
-			add_option("hits_pbr_db_query",$insert);
 		}
 		
 		function remove_page($page_ID)

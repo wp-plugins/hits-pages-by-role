@@ -1,1 +1,1 @@
-<span style="color: red; font-variant: small-caps; font-weight: bold;">Version 1.1.7 Changes: </span>Fixed links, and links for newly added records, widget bug fix
+<span style="color: red; font-variant: small-caps; font-weight: bold;">Version 1.2.1 Changes: </span>Icons, install issues fixed

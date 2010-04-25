@@ -22,7 +22,6 @@
 }
 
 #hits_pbr_options .moveUpLink,#hits_pbr_options .moveDownLink,#hits_pbr_options .deleteLink{
-	margin-right:6px;
 	clear:none;
 }
 
@@ -39,7 +38,8 @@
 
 #hits_pbr_options .pbrRecord{
 	width:860px;
-	height:24px;
+	height:32px;
+	line-height:32px;
 }
 
 #hits_pbr_options .pbrRecord .pageInfo{
