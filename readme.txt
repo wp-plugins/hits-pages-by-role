@@ -40,6 +40,7 @@ This section describes how to install the plugin and get it working.
 * Cleaned up jQuery code when adding / sorting records
 * Fixed issue where sorting/remove icons would not work for newly added items until a page refresh
 * Tested with wordpress 3.0 beta
+* [Updated May 11, 2010]
 
 = 1.2.1 =
 * Added Icons instead of links for Existing Page Manipulation
