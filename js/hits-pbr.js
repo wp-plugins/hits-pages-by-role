@@ -1,20 +1,15 @@
 // JavaScript Document
 jQuery(function(){
 		   jQuery("#hits_pbr_add_item_button").click(add);
-		   jQuery("a.pbrDelete").click(remove);
-		   jQuery("a.pbrMoveUp").click(moveUp);
-		   jQuery("a.pbrMoveDown").click(moveDown);
+		   addClickEvents();
 });
 
-function add()
+function add(e)
 {
+	e.preventDefault();
 	var hits_pbr_page_ID = jQuery("#hits_pbr_page_ID").val();
 	var hits_pbr_page_MinAccess = jQuery("#hits_pbr_page_MinAccess").val();
 	var hits_pbr_page_OverrideText = jQuery("#hits_pbr_page_OverrideText").val();
-	
-	var dataString = "hits_pbr_page_ID=" + hits_pbr_page_ID + 
-					"&hits_pbr_page_MinAccess=" + hits_pbr_page_MinAccess + 
-					"&hits_pbr_page_OverrideText=" + hits_pbr_page_OverrideText;
 					
 	var data = {
 		action: 'hits_pbr_add_record',
@@ -26,12 +21,25 @@ function add()
 	return false;
 }
 
+function clearClickEvents()
+{
+	   jQuery("a.pbrDelete").unbind('click');
+	   jQuery("a.pbrMoveUp").unbind('click');
+	   jQuery("a.pbrMoveDown").unbind('click');	
+}
+
+function addClickEvents()
+{
+	   jQuery("a.pbrDelete").click(remove);
+	   jQuery("a.pbrMoveUp").click(moveUp);
+	   jQuery("a.pbrMoveDown").click(moveDown);	
+}
+
 function successfulAdd(html)
 {
 	jQuery(html).appendTo("#pageList");
-	jQuery("#pageList:last-child a.pbrDelete").click(remove);
-	jQuery("#pageList:last-child a.pbrMoveUp").click(moveUp);
-	jQuery("#pageList:last-child a.pbrMoveDown").click(moveDown);
+	clearClickEvents();
+	addClickEvents();
 }
 
 function remove(e)
