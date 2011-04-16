@@ -1,10 +1,10 @@
 <?php
 /*
 	Plugin Name: HITS- Pages by Role
-	Version: 1.2.2
+	Version: 1.3.1
 	Author: Adam Erstelle
-	Author URI: http://www.homeitsolutions.ca
-	Plugin URI: http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role
+	Author URI: http://www.itegritysolutions.ca/
+	Plugin URI: http://www.itegritysolutions.ca/community/wordpress/pages-by-role/
 	Description: Provides a Pages Widget that allows customizations of links per user level
 	Text Domain: hits-pbr
 	
@@ -43,13 +43,12 @@ require_once WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)).'/hits-db.
 
 if (!class_exists('hits_pbr')) {
     class hits_pbr {
-        //This is where the class variables go, don't forget to use @var to tell what they're for
         /**
         * @var string The options string name for this plugin
         */
         var $optionsName = 'hits_pbr_options';
         var $wp_version;
-		var $version = '1.2.2';        
+		var $version = '1.3.1';        
 		
 		/**
         * @var string $pluginurl The path to this plugin
@@ -67,7 +66,6 @@ if (!class_exists('hits_pbr')) {
 		
 		var $hits_pbr_db;
         
-        //Class Functions
         /**
         * PHP 4 Compatible Constructor
         */
@@ -100,9 +98,8 @@ if (!class_exists('hits_pbr')) {
         * @var string $localizationDomain Domain used for localization
         */
         var $localizationDomain = "hits-pages-by-role";
- 
-		
-		/*
+ 		
+		/**
 		 * Centralized place for adding all actions and filters for the plugin into wordpress
 		*/
 		function actions_filters_hooks()
@@ -379,15 +376,11 @@ if (!class_exists('hits_pbr')) {
 						wp_loginout();
 						$output = ob_get_contents();
 						ob_end_clean();
-						$output = '<li>'.$output.'</li>';
+						$output = '<li class="page_item page-item-'.$pageId.'">'.$output.'</li>';
 					}
 					else if($pageId==-2)
 					{
-						ob_start();
-						wp_register();
-						$output = ob_get_contents();
-						ob_end_clean();
-						$output = $output;
+						$output = wp_register('<li class="page_item page-item--2">','</li>',false);
 					}
 					else
 					{
@@ -398,7 +391,7 @@ if (!class_exists('hits_pbr')) {
 							$pageName=$page->post_title;
 							
 						$linkURL = get_permalink($pageId);
-						$output ='<li><a href="'.$linkURL.'">'.$pageName.'</a></li>';
+						$output ='<li class="page_item page-item-'.$pageId.'"><a href="'.$linkURL.'">'.$pageName.'</a></li>';
 					}
 					if($this->has_access_level_to_display_link($pageAccess,$role))
 						echo "\n".$output;
@@ -491,7 +484,7 @@ if (!class_exists('hits_pbr')) {
                 <form method="post" id="hits_pbr_options">
                 <?php wp_nonce_field('hits_pbr-update-options');?>
                 <p><?php $this->echoStr('This plugin brought to you for free by');?>
-                <a href="http://www.homeitsolutions.ca/websites/wordpress-plugins">Home I.T. Solutions</a>.</p>
+                <a href="http://www.itegritysolutions.ca/community/wordpress/pages-by-role/" target="_blank">ITegrity Solutions</a>.</p>
                 
                 <h3><?php $this->echoStr('Plugin Settings'); ?></h3>
                 <div id="pluginSettings">
@@ -558,7 +551,8 @@ if (!class_exists('hits_pbr')) {
 				   <?php $this->echoStr('to leave any feedback, translations, comments or donations. All donations will go towards micro loans through');?>
                    <a href="http://www.kiva.org">Kiva</a>.</div>
                 </form>
-                <?php
+                </div>
+            <?php
         }
   } //End Class
 } //End if class exists statement

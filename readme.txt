@@ -1,6 +1,6 @@
 === HITS- Pages By Role ===
 Contributors: wpgwiggum
-Donate Link:  http://www.homeitsolutions.ca/websites/wordpress-plugins/pages-by-role 
+Donate Link:  http://www.itegritysolutions.ca/community/wordpress/pages-by-role
 Tags: roles, pages, widget, plugin, admin, author, contributor, custom, links, editor, sidebar
 Requires at least: 2.7
 Tested up to: 3.0
@@ -35,6 +35,13 @@ This section describes how to install the plugin and get it working.
 3. Adding a new page to the list. The Page dropdown has a list of all Pages in your site.
 
 == Changelog ==
+
+= 1.3.1 =
+* Output of list items include similar classes as the Pages widget
+* Improved in-code documentation
+* Updated readme document
+* Optimized hooks into wordpress
+* [Updated April 15, 2011]
 
 = 1.2.2 =
 * Cleaned up jQuery code when adding / sorting records
